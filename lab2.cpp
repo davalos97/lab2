@@ -1,5 +1,5 @@
 //
-//modified by:
+//modified by:Daniel Avalos
 //date:
 //
 //original author: Gordon Griesel
@@ -28,15 +28,21 @@ class Global {
 public:
 	int xres, yres;
     float w;
-    float dir;
+    float xdir;
+    float ydir;
     float pos[2];
+    int color[3];
 	Global() {
         xres = 400;
         yres = 200;
         w = 20.0f;
-        dir = 30.0f;
+        xdir = 30.0f;
+        ydir = 30.0f;
         pos[0] = 0.0f+w;
         pos[1] = yres/2.0f;
+        color[0] = 150;
+        color[1] = 120;
+        color[2] = 220;
     }
 } g;
 
@@ -222,7 +228,34 @@ int X11_wrapper::check_keys(XEvent *e)
 		switch (key) {
 			case XK_a:
 				//the 'a' key was pressed
+                if (g.xdir >= 0){
+                    g.xdir = g.xdir + 1;
+                }
+                else{
+                    g.xdir = g.xdir - 1;
+                }
+                if (g.ydir >= 0){
+                    g.ydir = g.ydir + 1;
+                }
+                else{
+                    g.ydir = g.ydir - 1;
+                }
 				break;
+            case XK_s:
+                //the 's' key was pressed
+                if (g.xdir >= 0){
+                    g.xdir = g.xdir - 1;
+                }
+                else{
+                    g.xdir = g.xdir + 1;
+                }
+                if (g.ydir >= 0){
+                    g.ydir = g.ydir -1;
+                 }
+                else{
+                    g.ydir = g.ydir + 1;
+                }
+                break;
 			case XK_Escape:
 				//Escape key was pressed
 				return 1;
@@ -247,31 +280,78 @@ void init_opengl(void)
 void physics()
 {
 	//No physics yet.
-     g.pos[0] += g.dir;
+     g.pos[0] += g.xdir;
+     g.pos[1] += g.ydir;
+    //before collision
+    if (g.color[0] <= 0){
+        g.color[0] = 0;
+    }
+    else{
+        g.color[0] = g.color[0] - 15;
+    }
+    if (g.color[2] >= 255){
+        g.color[2] = 255;
+    }
+    else{
+        g.color[2] = g.color[2] + 15;
+    }
     //Collision
+    //x direction
      if (g.pos[0] >= (g.xres-g.w)) {
         g.pos[0] = (g.xres-g.w);
-        g.dir = -g.dir;
+        g.xdir = -g.xdir;
+        //change color
+        g.color[0] = 255;
+        g.color[1] = 0;
+        g.color[2] = 0;
+        cout << "collision with right wall\n";
     }
     if (g.pos[0] <= g.w) {
         g.pos[0] = g.w;
-        g.dir = -g.dir;
+        g.xdir = -g.xdir;
+        //change color
+        g.color[0] = 255;
+        g.color[1] = 0;
+        g.color[2] = 0;
+        cout << "collision with left wall\n";
+    }
+    //y direction
+    if (g.pos[1] >= (g.yres-g.w)) {
+        g.pos[1] = (g.yres-g.w);
+        g.ydir = -g.ydir;
+        //change color
+        g.color[0] = 255;
+        g.color[1] = 0;
+        g.color[2] = 0;
+        cout << "top\n";
+    }
+    if (g.pos[1] <= g.w) {
+        g.pos[1] = g.w;
+        g.ydir = -g.ydir;
+        //change color
+        g.color[0] = 255;
+        g.color[1] = 0;
+        g.color[2] = 0;
+        cout << "bottom\n";
     }
 }
-
 void render()
 {
+    //color change
+    
 	//clear the window
 	glClear(GL_COLOR_BUFFER_BIT);
 	//draw the box
-	glPushMatrix();
-	glColor3ub(150, 120, 220);
-	glTranslatef(g.pos[0], g.pos[1], 0.0f);
-	glBegin(GL_QUADS);
-		glVertex2f(-g.w, -g.w);
-		glVertex2f(-g.w,  g.w);
-		glVertex2f( g.w,  g.w);
-		glVertex2f( g.w, -g.w);
+    if (g.xres >= g.w * 2) {
+        glPushMatrix();
+        glColor3ub(g.color[0], g.color[1], g.color[2]);
+        glTranslatef(g.pos[0], g.pos[1], 0.0f);
+        glBegin(GL_QUADS);
+            glVertex2f(-g.w, -g.w);
+            glVertex2f(-g.w,  g.w);
+            glVertex2f( g.w,  g.w);
+            glVertex2f( g.w, -g.w);
+    }
 	glEnd();
 	glPopMatrix();
 }
