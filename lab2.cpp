@@ -34,7 +34,6 @@ public:
     float pos[2];
     int color[3];
     float dir;
-    float pos[2];
 	Global() {
         xres = 400;
         yres = 200;
@@ -358,34 +357,8 @@ void render()
             glVertex2f(-g.w,  g.w);
             glVertex2f( g.w,  g.w);
             glVertex2f( g.w, -g.w);
-    }
-     g.pos[0] += g.dir;
-    //Collision
-     if (g.pos[0] >= (g.xres-g.w)) {
-        g.pos[0] = (g.xres-g.w);
-        g.dir = -g.dir;
-    }
-    if (g.pos[0] <= g.w) {
-        g.pos[0] = g.w;
-        g.dir = -g.dir;
+        glEnd();
+        glPopMatrix();
     }
 }
-
-void render()
-{
-	//clear the window
-	glClear(GL_COLOR_BUFFER_BIT);
-	//draw the box
-	glPushMatrix();
-	glColor3ub(150, 120, 220);
-	glTranslatef(g.pos[0], g.pos[1], 0.0f);
-	glBegin(GL_QUADS);
-		glVertex2f(-g.w, -g.w);
-		glVertex2f(-g.w,  g.w);
-		glVertex2f( g.w,  g.w);
-		glVertex2f( g.w, -g.w);
-	glEnd();
-	glPopMatrix();
-}
-
 
