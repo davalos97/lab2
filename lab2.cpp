@@ -303,7 +303,7 @@ void physics()
     if (g.color[2] >= 255){
         g.color[2] = 255;
     }
-    else{
+    else {
         g.color[2] = g.color[2] + 15;
     }
     //Collision
